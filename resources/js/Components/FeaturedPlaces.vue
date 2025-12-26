@@ -3,9 +3,10 @@ import DestinationCard from "@/Components/DestinationCard.vue";
 import ExistingPlanModal from "@/Components/ExistingPlanModal.vue";
 import Loading from "@/Components/Loading.vue";
 import NewPlanModal from "@/Components/NewPlanModal.vue";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import axios from "axios";
 import { onMounted, ref, watch } from "vue";
+import { z } from "zod";
 
 const { provinces, count, countMany, plans } = defineProps(['provinces', 'count', 'countMany', 'plans'])
 const showModal = ref(false);
@@ -24,8 +25,8 @@ function selectPlaceNew(place) {
 watch(showModal, val => !val ? selectedPlace.value = null : null)
 watch(showNewPlanModal, val => !val ? selectedPlace.value = null : null)
 
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", generationConfig: { responseMimeType: "application/json" } });
+const genAI = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY })
+// const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", generationConfig: { responseMimeType: "application/json" } });
 
 const featuredPlacesName = ref([])
 const featuredPlaces = ref([])
@@ -55,11 +56,24 @@ async function loadMorePlaces() {
 onMounted(async () => {
   loading.value = true
   const ourPrompt = `${provinces?.length > 1 ? (count ?? 20) : (countMany ?? 40)}+ places hidden gem in ${provinces?.length ? provinces.join(', ') : 'Indonesia'}. Return array of object {fullname, short_description}`;
-  const result = await model.generateContent(ourPrompt);
-  const response = await result.response;
-  const text = JSON.parse(response.text());
+  // const result = await model.generateContent(ourPrompt);
+  const result = await genAI.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: ourPrompt,
+    config: {
+      responseMimeType: "application/json",
+    }
+  })
+  // const outputSchema = z.array(z.object({
+
+  // }))
+  // for await (const chunk of result) {
+  //   console.log(chunk.text)
+  // }
+  // const response = await result.te;
+  const text = JSON.parse(result.text);
   featuredPlacesName.value = text
-  console.log(response.text());
+  console.log("Hasil AI", text);
   await loadMorePlaces()
   const observer = new IntersectionObserver(entries => entries.forEach(entry => {
     if (entry.isIntersecting && !loading.value) loadMorePlaces()

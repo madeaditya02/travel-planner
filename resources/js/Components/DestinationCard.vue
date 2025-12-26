@@ -17,7 +17,7 @@ function emitShowModal(event) {
 function emitShowNewPlanModal(event) {
   emit('showNewPlanModal');
 }
-const address = place?.addressComponents.filter(comp => comp.types.includes('administrative_area_level_3') || comp.types.includes('administrative_area_level_1')).map(comp => comp.shortText).join(', ')
+const address = place?.addressComponents.filter(comp => comp.types?.includes('administrative_area_level_3') || comp.types?.includes('administrative_area_level_1')).map(comp => comp.shortText).join(', ')
 const showDesc = ref(false)
 </script>
 <template>

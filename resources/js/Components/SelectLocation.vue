@@ -15,7 +15,8 @@ import axios from 'axios';
 import { placePhoto } from '@/util';
 import PrimaryButton from './PrimaryButton.vue';
 import PlaceCard from './PlaceCard.vue';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+// import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from "@google/genai";
 import Textarea from 'primevue/textarea';
 import Loading from './Loading.vue';
 
@@ -56,17 +57,25 @@ function submit() {
 const prompt = ref('')
 const AISearchResults = ref([])
 const loadingAI = ref(false)
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", generationConfig: { responseMimeType: "application/json" } });
+// const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)
+const genAI = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY })
+// const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", generationConfig: { responseMimeType: "application/json" } });
 async function getAI() {
   if (loadingAI.value)
     return
   AISearchResults.value = []
   loadingAI.value = true
   const ourPrompt = `${prompt.value}. Provide some places (more than one) recommendations based on the prompt. Return an array of the fullname, city and regency of the place as one string.`;
-  const result = await model.generateContent(ourPrompt);
-  const response = await result.response;
-  const text = response.text();
+  const result = await genAI.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: ourPrompt,
+    config: {
+      responseMimeType: "application/json",
+    }
+  });
+  // const result = await model.generateContent(ourPrompt);
+  // const response = await result.response;
+  const text = response.text;
   const places = JSON.parse(text);
   places.forEach(async place => {
     const res = (await axios.post('https://places.googleapis.com/v1/places:searchText', {

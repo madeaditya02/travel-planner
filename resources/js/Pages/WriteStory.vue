@@ -14,7 +14,8 @@ import { dataURLtoFile, formAxios, previewImage } from '@/util';
 import axios from 'axios';
 import PreviewLayout from '@/Layouts/PreviewLayout.vue';
 import Story from './Story.vue';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
+// import { GoogleGenerativeAI } from '@google/generative-ai';
 import Drawer from 'primevue/drawer';
 import Textarea from 'primevue/textarea';
 import IconButton from '@/Components/IconButton.vue';
@@ -97,17 +98,25 @@ const ai = ref(false)
 const prompt = ref('')
 const aiResult = ref(null)
 const loadingAI = ref(false)
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-const chat = model.startChat()
+const genAI = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY })
+// const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)
+// const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const chat = genAI.chats.create({
+  model: "gemini-2.5-flash"
+})
+// const chat = model.startChat()
 const chatHistory = ref();
 async function getAI() {
   // const result = await model.generateContent(prompt.value);
   loadingAI.value = true
   document.querySelector('.p-drawer-content').scrollTo(0, document.querySelector('.p-drawer-content').scrollHeight);
-  const result = await chat.sendMessage(prompt.value);
-  const response = await result.response;
-  aiResult.value = response.text();
+  const result = await chat.sendMessageStream({ message: prompt.value });
+  for await (const chunk of result) {
+    console.log(chunk.text);
+    aiResult.value = chunk.text;
+  }
+  // const result = await chat.sendMessage({ message: prompt.value });
+  // const response = await result.response;
   prompt.value = '';
   chatHistory.value = await chat.getHistory();
   loadingAI.value = false

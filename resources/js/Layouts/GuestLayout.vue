@@ -13,9 +13,9 @@ const user = page.props.auth.user;
 onMounted(() => {
   window.addEventListener('scroll', () => {
     if (window.scrollY > 0) {
-      document.querySelector('.navbar').classList.add('!shadow-lg')
+      document.querySelector('.navbar')?.classList.add('!shadow-lg')
     } else {
-      document.querySelector('.navbar').classList.remove('!shadow-lg')
+      document.querySelector('.navbar')?.classList.remove('!shadow-lg')
     }
   })
 })
@@ -38,7 +38,7 @@ const show = ref(false)
     class="navbar flex justify-between md:items-center md:px-[120px] py-6 flex-wrap flex-col md:flex-row fixed top-0 left-0 right-0 bg-white transition-all z-20">
     <div class="w-full md:w-auto flex justify-between items-center px-8 md:px-0">
       <Link href="/" class="text-3xl font-semibold">
-      <img src="/img/Logo.png" alt="" class="w-32 sm:w-40 -mt-2">
+        <img src="/img/Logo.png" alt="" class="w-32 sm:w-40 -mt-2">
       </Link>
       <IconButton class="md:hidden" @click="show = !show">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"

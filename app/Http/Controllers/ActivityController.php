@@ -61,7 +61,7 @@ class ActivityController extends Controller
 
         Activity::create($newActivity);
         $updated = $plan->activities()->with('place')->orderBy('time', 'ASC')->get();
-        broadcast(new UpdateActivity($updated, $plan->id))->toOthers();
+        // broadcast(new UpdateActivity($updated, $plan->id))->toOthers();
 
         return back();
     }
@@ -131,7 +131,7 @@ class ActivityController extends Controller
         $data = $request->all();
         $activity->delete();
         $updated = $plan->activities()->with('place')->orderBy('time', 'asc')->get();
-        broadcast(new UpdateActivity($updated, $plan->id))->toOthers();
+        // broadcast(new UpdateActivity($updated, $plan->id))->toOthers();
         return response()->json($data['activities']);
     }
 }
