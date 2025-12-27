@@ -17,6 +17,7 @@ const formData = ref({
   startDate: new Date(),
   endDate: new Date(),
 })
+const errorForm = ref()
 watch(show, s => {
   rangePlan.value = ['', '']
 })
@@ -24,6 +25,7 @@ watch(show, s => {
 const loading = ref(false)
 function createPlan(form, userId) {
   form.userId = userId;
+  errorForm.value = null
   loading.value = true
   console.log(form);
   axios.post('/dashboard/plan', {
@@ -35,6 +37,8 @@ function createPlan(form, userId) {
     router.visit(`/dashboard/plans/${response.data.public_id}`)
   })
     .catch(function (error) {
+      errorForm.value = error.response.data.message
+      loading.value = false
       console.log(error);
     });
 }
@@ -54,7 +58,7 @@ function createPlan(form, userId) {
             </svg>
           </button>
         </div>
-        <div class="flex gap-2.5 items-center my-5">
+        <div class="flex gap-2.5 items-center mt-5">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor" class="size-6">
             <path stroke-linecap="round" stroke-linejoin="round"
@@ -69,7 +73,8 @@ function createPlan(form, userId) {
           </DatePicker>
           <input type="hidden" v-model="formData.userId">
         </div>
-        <Button :disabled="loading" @click="createPlan(formData, $page.props.auth.user.id)">
+        <p class="text-sm text-red-600 mt-2" v-if="errorForm">Error: {{ errorForm }}</p>
+        <Button :disabled="loading" @click="createPlan(formData, $page.props.auth.user.id)" class="mt-5">
           <svg v-if="!loading" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor" class="size-6 inline">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />

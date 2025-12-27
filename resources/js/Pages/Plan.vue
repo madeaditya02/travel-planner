@@ -59,29 +59,29 @@ const rangeTime = computed(() => rangePlan(plan.value))
 const onlineUsers = ref([])
 onMounted(() => {
   getActivity();
-  window.Echo.join(`plan.${plan.value.id}`)
-    .here((users) => {
-      onlineUsers.value = users
-    })
-    .joining((user) => {
-      onlineUsers.value.push(user)
-    })
-    .leaving((user) => {
-      onlineUsers.value = onlineUsers.value.filter(u => u.id != user.id)
-    })
-    .listen('UpdateActivity', e => {
-      // planActivity.value = e.activities
-      getActivity();
-      // console.log(e);
-      // console.log('updated');
-    })
-    .error((error) => {
-      console.error(error);
-    });
+  // window.Echo.join(`plan.${plan.value.id}`)
+  //   .here((users) => {
+  //     onlineUsers.value = users
+  //   })
+  //   .joining((user) => {
+  //     onlineUsers.value.push(user)
+  //   })
+  //   .leaving((user) => {
+  //     onlineUsers.value = onlineUsers.value.filter(u => u.id != user.id)
+  //   })
+  //   .listen('UpdateActivity', e => {
+  //     // planActivity.value = e.activities
+  //     getActivity();
+  //     // console.log(e);
+  //     // console.log('updated');
+  //   })
+  //   .error((error) => {
+  //     console.error(error);
+  //   });
 })
 
 onUnmounted(() => {
-  Echo.leave(`plan.${plan.value.id}`)
+  // Echo.leave(`plan.${plan.value.id}`)
 })
 
 const showAddPlan = ref(false);
@@ -124,10 +124,6 @@ async function submitActivity() {
   const res = await axios.post(`/dashboard/plans/${plan.value.id}/activities`, {
     data: newActivity.data(),
     activities: plan.value.activities
-  }, {
-    headers: {
-      "X-Socket-ID": Echo.socketId()
-    }
   })
   getActivity()
   showAddPlan.value = false;
@@ -140,10 +136,6 @@ async function deleteActivity(id) {
   const res = await axios.delete(`/dashboard/plans/${plan.value.id}/activities/${id}`, {
     data: {
       activities: plan.value.activities,
-    }
-  }, {
-    headers: {
-      "X-Socket-ID": Echo.socketId()
     }
   })
   getActivity()

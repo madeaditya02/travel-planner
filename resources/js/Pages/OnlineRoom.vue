@@ -7,26 +7,26 @@ const activities = ref(plan.activities)
 onMounted(() => {
   // console.log(plan);
   plan.activities = plan.activities.map(a => ({ ...a, plan_id: plan.id }))
-  Echo.join(`chat.${plan.id}`)
-    .here((users) => {
-      onlineUsers.value = users
-    })
-    .joining((user) => {
-      console.log(user.name);
-      onlineUsers.value.push(user)
-    })
-    .leaving((user) => {
-      console.log(user.name);
-      onlineUsers.value = onlineUsers.value.filter(u => u.id != user.id)
-    })
-    .listen('UpdateActivity', e => {
-      // console.log('Hello');
-      console.log(e);
-      activities.value = e.activities
-    })
-    .error((error) => {
-      console.error(error);
-    });
+  // Echo.join(`chat.${plan.id}`)
+  //   .here((users) => {
+  //     onlineUsers.value = users
+  //   })
+  //   .joining((user) => {
+  //     console.log(user.name);
+  //     onlineUsers.value.push(user)
+  //   })
+  //   .leaving((user) => {
+  //     console.log(user.name);
+  //     onlineUsers.value = onlineUsers.value.filter(u => u.id != user.id)
+  //   })
+  //   .listen('UpdateActivity', e => {
+  //     // console.log('Hello');
+  //     console.log(e);
+  //     activities.value = e.activities
+  //   })
+  //   .error((error) => {
+  //     console.error(error);
+  //   });
   // Echo.channel(`activities.${plan.id}`).listen('UpdateActivity', e => {
   //  console.log("Hello");
   //  console.log(e);

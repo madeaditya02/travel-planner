@@ -41,6 +41,11 @@ class PlanController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'name' => 'required',
+            'start_date' => 'required',
+            'end_date' => 'required',
+        ]);
         try {
             $createdPlan = Plan::create(
                 [
@@ -147,7 +152,7 @@ class PlanController extends Controller
         if ($user) {
             DB::table('plan_user')->where('user_id', $user->id)->update(['accepted_at' => now()]);
             $user->notifications()->where('data->plan_id', $plan->id)->update(['read_at' => now()]);
-            return redirect('/dashboard/plan/' . $plan->public_id)->with('alert', ['success', 'Join Plan', 'You successfully joined plan']);
+            return redirect('/dashboard/plans/' . $plan->public_id)->with('alert', ['success', 'Join Plan', 'You successfully joined plan']);
         } else {
             abort(403);
         }
